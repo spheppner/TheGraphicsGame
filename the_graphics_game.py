@@ -34,13 +34,11 @@ class Shape():
     def forward(self, delta=1):
         deltavec = v.Vec2d(delta, 0)
         deltavec.rotate(self.angle)
-        #self.startpoint += deltavec
         self.move += deltavec
     
     def rotate(self, delta_angle=1):
         """alters pointlist by rotation with angle from rotationpoint"""
         self.angle += delta_angle
-        #print(self.angle)
         for point in self.pointlist:
             point.rotate(delta_angle)    
         
@@ -65,11 +63,8 @@ class Shape():
         
     def draw(self):
         oldpoint = self.pointlist[0]
-        #pygame.draw.line(self.screen, self.color, (0,0),(100,10),2)
-        #pygame.draw.line(self.screen, self.color, (100,10),(10,150),2)
         self.color = (random.randint(0, 255) ,random.randint(0, 255) ,random.randint(0, 255) ) 
         for point in self.pointlist:
-            #print("painting from point", oldpoint.x, oldpoint.y, "to", point.x, point.y)
             pygame.draw.line(self.screen, self.color,
                 (self.startpoint.x + oldpoint.x * self.zoom,
                  self.startpoint.y + oldpoint.y * self.zoom),
@@ -447,20 +442,14 @@ class Smoke(Fragment):
         
 class Rocket(Fragment):
     def __init__(self, startpos, target, speed=None, color=(150,99,0), ex=None):
-            #leftcorner = v.Vec2d(0,self.height)
-            #rightcorner = v.Vec2d(self.width,self.height)
             if speed is not None:
                 self.speed = speed
             else:
                 self.speed = random.randint(130,180)
             rocketcolor = color
-            #speed = random.randint(150,180)
             rocketmove = target - startpos
             rockettime = rocketmove.length / self.speed
             rocketmove = rocketmove.normalized() * self.speed
-            #leftmove = pos-leftcorner
-            #lefttime = leftmove.length / speed
-            #leftmove = leftmove.normalized() * speed
             Fragment.__init__(self, pos=startpos, move=rocketmove, color=rocketcolor, gravity=None, lifetime=rockettime)
             if ex is None:
                 self.ex = random.randint(1,7)
@@ -479,8 +468,6 @@ class Rocket(Fragment):
               m.rotate(random.randint(-5, 5))
               Spark(self.pos, move = m)
           else:
-          #if self.lifetime < 0:
-                # explosion
                 c1 = random.randint(0,255)
                 c2 = random.randint(0,255)
                 c3 = random.randint(0,255)
@@ -551,54 +538,6 @@ class Rocket(Fragment):
                     Flashlight( self.pos, 2, 0.1, 0.1, True )
                                    
                 self.kill()
-                
-      
-
-            
-  
-
-class Ball():
-    
-    group = []
-    number = 0
-    maxage = 400
-    """this is not a native pygame sprite but instead a pygame surface"""
-    def __init__(self, screen, startpoint=v.Vec2d(5,5), move=v.Vec2d(1,0), radius = 50, color=(0,0,255), bossnumber=0):
-        """create a (black) surface and paint a blue ball on it"""
-        self.number = Ball.number
-        Ball.number += 1
-        #Ball.group[self.number] = self
-        Ball.group.append(self)
-        self.radius = radius
-        self.color = color
-        self.bossnumber = bossnumber # 
-        self.screen = screen
-        self.startpoint = v.Vec2d(startpoint.x, startpoint.y) # make a copy of the startpoint vector
-        self.move = move
-        self.age = 0
-        # create a rectangular surface for the ball 100x100
-        self.surface = pygame.Surface((2*self.radius,2*self.radius))    
-        # pygame.draw.circle(Surface, color, pos, radius, width=0) # from pygame documentation
-        #pygame.draw.circle(self.surface, color, (radius, radius), radius) # draw blue filled circle on ball surface
-        width = 1
-        pygame.draw.line(self.surface, self.color, (50,50),
-                    (50+self.move.x * 10, 50+self.move.y*10),width)
-        self.startpoint.x -= 50
-        self.startpoint.y -= 50
-        self.surface.set_colorkey((0,0,0)) # make black transparent
-        self.surface = self.surface.convert_alpha() # for faster blitting. 
-        
-    #def blit(self, background):
-        #"""blit the Ball on the background"""
-        #background.blit(self.surface, ( self.x, self.y))
-        
-    def draw(self):
-        self.screen.blit(self.surface, (self.startpoint.x, self.startpoint.y))
-        self.startpoint += self.move
-        self.age += 1
-        
-
-        
 
 class PygView(object):
   
@@ -615,7 +554,7 @@ class PygView(object):
         PygView.height = height  # also self.height
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
         self.background = pygame.Surface(self.screen.get_size()).convert()  
-        self.background.fill((255, 255, 255)) # yannik hier hintergrund färben
+        self.background.fill((0, 0, 255))
         # fill background white
         self.clock = pygame.time.Clock()
         self.fps = fps
@@ -627,33 +566,10 @@ class PygView(object):
         self.ufo1 = Ufo()
         self.ship1 = Ship1(pos=v.Vec2d(500,500), move=v.Vec2d(100,100))
 
-    def paint(self):
-        """painting ships on the surface"""
-
-        self.yanniks_ship = Shape(self.screen, v.Vec2d(100, 80),
-                                       (
-                                        v.Vec2d(0, 0),
-                                        v.Vec2d(-25, 25),
-                                        v.Vec2d(25, 0),
-                                        v.Vec2d(-25, -25),
-                                        v.Vec2d(0, 0)))
-        self.yanniks_ship.draw()
-        self.pixelhirn = Shape(self.screen, v.Vec2d(self.width-100, self.height-100),
-                                       (
-                                        v.Vec2d(0, 0),
-                                        v.Vec2d(-25, 25),
-                                        v.Vec2d(75, 0),
-                                        v.Vec2d(-25, -25),
-                                        v.Vec2d(0, 0)))
-        self.pixelhirn.rotate(180)
-        self.pixelhirn.draw()
-        
-        
 
     def run(self):
         """The mainloop
-        """
-        self.paint() 
+        """ 
         running = True
         while running:
             # --------- update time -------------            
@@ -662,12 +578,6 @@ class PygView(object):
             seconds = milliseconds / 1000.0
             self.playtime += seconds
             text_time = "FPS: {:4.3} TIME: {:6.3} sec".format(self.clock.get_fps(), self.playtime)
-            text_player1 = "Player1: HP: {}".format(self.yanniks_ship.hitpoints)
-            text_player2 = "Player2: HP: {}".format(self.pixelhirn.hitpoints)
-            self.draw_text(text_player1, x=50, y=30, color=(200,20,0))
-            self.draw_text(text_time, x = self.width//2-200, y=30, color=(100,0,100))
-            self.draw_text(text_player2, x=self.width-300, y=30, color=(0,20,200))
-            
             
             # ------------ event handler: keys pressed and released -----
             for event in pygame.event.get():
@@ -702,107 +612,7 @@ class PygView(object):
                                         
             # --------- pressed key handler --------------            
             pressed = pygame.key.get_pressed()            
-            #self.yanniks_ship.move = v.Vec2d(0,0)
-            if pressed[pygame.K_w]:
-                self.yanniks_ship.forward(150)
-            if pressed[pygame.K_s]:
-                self.yanniks_ship.forward(-50)
-            if pressed[pygame.K_a]:
-                self.yanniks_ship.rotate(-5)
-            if pressed[pygame.K_d]:
-                self.yanniks_ship.rotate(5)
-           
-                
-            #if pressed[pygame.K_t]:
-            #    self.yanniks_ship.zoom += 0.25
-            #if pressed[pygame.K_f]:
-            #    self.yanniks_ship.zoom -= 0.25
-            #-------- pixelhirn ---------
-            #self.pixelhirn.move = v.Vec2d(0,0)
-            if pressed[pygame.K_UP]:
-                self.pixelhirn.forward(150)
-            if pressed[pygame.K_DOWN]:
-                self.pixelhirn.forward(-50)
-            if pressed[pygame.K_LEFT]:
-                self.pixelhirn.rotate(-5)
-            if pressed[pygame.K_RIGHT]:
-                self.pixelhirn.rotate(5)
-            
-            #if pressed[pygame.K_PLUS]:
-            #    self.pixelhirn.zoom += 0.25
-            #if pressed[pygame.K_MINUS]:
-            #    self.pixelhirn.zoom -= 0.25
-            # ----------update ships ------
-            self.yanniks_ship.update(seconds)
-            self.pixelhirn.update(seconds)
-            # ----------draw ships ----------------
-            self.yanniks_ship.draw()
-            self.pixelhirn.draw()
-            
-            # -----draw balls-----
-            for b in Ball.group:
-                b.draw()
-            # ---- delete old balls ----
-            
-            Ball.group = [b for b in Ball.group if b.age < Ball.maxage]
-            
-            # ----- collision detection -----
-            critical_distance = 20
-            for b in Ball.group:
-                if b.bossnumber != self.pixelhirn.number:
-                    if (b.startpoint - self.pixelhirn.startpoint).get_length() < critical_distance:
-                        self.pixelhirn.hitpoints -= 1
-                if b.bossnumber != self.yanniks_ship.number:
-                    if (b.startpoint - self.yanniks_ship.startpoint).get_length() < critical_distance:
-                        self.yanniks_ship.hitpoints -= 1
-            
-            # -------- draw cannons ------------
-            # cannon yannik aiming at pixelhirn 
-            c =  self.pixelhirn.startpoint - self.yanniks_ship.startpoint 
-            c = c.normalized()
-            c *= 35
-            pygame.draw.line(self.screen, (0,0,0), (self.yanniks_ship.startpoint.x,
-                                                    self.yanniks_ship.startpoint.y),
-                                                    (self.yanniks_ship.startpoint.x + c.x,
-                                                    self.yanniks_ship.startpoint.y + c.y),
-                                                    8) 
-            
-            
 
-            # cannon yannik aiming at pixelhirn
-            d =  self.yanniks_ship.startpoint - self.pixelhirn.startpoint 
-            d = d.normalized()
-            d *= 35
-            pygame.draw.line(self.screen, (0,0,0), (self.pixelhirn.startpoint.x,
-                                                    self.pixelhirn.startpoint.y),
-                                                    (self.pixelhirn.startpoint.x + d.x,
-                                                    self.pixelhirn.startpoint.y + d.y),
-                                                    8)                                             
-                                                    
-                                                            
-            # --------- (auto)fire -------
-            #c *= 0.05
-            #d *= 0.05
-            speedfactor = 0.05
-            if pressed[pygame.K_LCTRL]:
-            #if random.random() < 0.1:
-                move = c * speedfactor # + self.yanniks_ship.move
-                Ball(self.screen, self.yanniks_ship.startpoint+c, move, color=(200,20,0), bossnumber=self.yanniks_ship.number)                      
-            
-            if pressed[pygame.K_RSHIFT]:                                                
-            #if random.random() < 0.1:
-                move = d * speedfactor 
-                Ball(self.screen, self.pixelhirn.startpoint+d,  move, color=(0,0,200), bossnumber=self.pixelhirn.number)   
-            # ------ sentry guns in corner
-            p1 = v.Vec2d(0,0)
-            distance1 = self.pixelhirn.startpoint - p1
-            #Ball(self.screen, (
-            
-            
-            
-            # ---------- update screen ----------- 
-            #pygame.display.flip()
-            #self.screen.blit(self.background, (0, 0))
             
             # ---------- update screen ----------- 
             self.screen.blit(self.background, (0, 0))
