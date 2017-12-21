@@ -94,7 +94,8 @@ class VectorSprite(pygame.sprite.Sprite):
     
     def faceto(self, angle):
         oldcenter = self.rect.center
-        self.image = pygame.transform.rotate(self.image0, angle + 0)
+        print("angle:", angle)
+        self.image = pygame.transform.rotate(self.image0, angle + 180)
         self.rect = self.image.get_rect()
         self.rect.center = oldcenter
         
@@ -102,7 +103,7 @@ class VectorSprite(pygame.sprite.Sprite):
         self.age += seconds
         self.pos += self.move * seconds
         self.rect.center = (self.pos.x, self.pos.y)
-        self.faceto(self.move.get_angle())
+        self.faceto(v.Vec2d(self.move.x * -1, self.move.y).get_angle())
         if self.lifetime is not None:
             self.lifetime -= seconds
             if self.lifetime < 0:
@@ -570,7 +571,7 @@ class PygView(object):
         self.allgroup = pygame.sprite.LayeredUpdates()
         VectorSprite.groups = self.allgroup
         Fragment.groups = self.allgroup
-        self.ufo1 = Ufo()
+        #self.ufo1 = Ufo()
         self.ship1 = Ship1(pos=v.Vec2d(500,500), move=v.Vec2d(100,100))
 
 
@@ -597,7 +598,7 @@ class PygView(object):
                     if event.key == pygame.K_c:
                         self.background.fill((255,255,255))
  
-                    start, end = random.choice(((self.ufo1.pos, self.ship1.pos), (self.ship1.pos, self.ufo1.pos)))
+                    #start, end = random.choice(((self.ufo1.pos, self.ship1.pos), (self.ship1.pos, self.ufo1.pos)))
                     if event.key == pygame.K_1:
                         Rocket(start, end,  ex=1)
                     if event.key == pygame.K_2:
@@ -640,8 +641,8 @@ class PygView(object):
             pygame.draw.line(self.screen, (0,200,0), (self.ship1.pos.x, self.ship1.pos.y),
                          (self.ship1.pos.x + self.ship1.move.x, self.ship1.pos.y + self.ship1.move.y), 3)
             # green movement indicator for ufo1
-            pygame.draw.line(self.screen, (0, 200, 0), (self.ufo1.pos.x, self.ufo1.pos.y),
-                         (self.ufo1.pos.x + self.ufo1.move.x, self.ufo1.pos.y + self.ufo1.move.y), 3)
+            #pygame.draw.line(self.screen, (0, 200, 0), (self.ufo1.pos.x, self.ufo1.pos.y),
+            #             (self.ufo1.pos.x + self.ufo1.move.x, self.ufo1.pos.y + self.ufo1.move.y), 3)
             # ------ flip screen ------
             pygame.display.flip()
             
