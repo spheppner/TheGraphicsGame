@@ -155,17 +155,23 @@ class PygView(object):
                             text="You need to\ncontrol a ship\nand make graphics\nwhile the other, automated\nplayer flies around!"
                             textscroller_vertical.PygView(text, self.width, self.height).run()
                         elif result == "Turn music off":
-							#TURN MUSIC OFF
+                            #TURN MUSIC OFF
                             Settings.menu["Options"][0] = "Turn music on"
                         elif result == "Turn music on":
-							#TURN MUSIC ON
+                            #TURN MUSIC ON
                             Settings.menu["Options"][0] = "Turn music off"
                         elif result == "Turn sound off":
-							#TURN MUSIC OFF
+                            #TURN MUSIC OFF
                             Settings.menu["Options"][1] = "Turn sound on"
                         elif result == "Turn sound on":
-							#TURN MUSIC ON
+                            #TURN MUSIC ON
                             Settings.menu["Options"][1] = "Turn sound off"
+                        elif result == "Simon HEPPNER":
+                            text="Programmer of this\ngame. Likes Yoghurt!\n:D"
+                            textscroller_vertical.PygView(text, self.width, self.height).run()
+                        elif result == "Horst JENS":
+                            text="Programming-Teacher of\nSimon HEPPNER.\nIs pleased to contribute!"
+                            textscroller_vertical.PygView(text, self.width, self.height).run()
                         elif result=="Quit":
                             print("Bye")
                             pygame.quit()
