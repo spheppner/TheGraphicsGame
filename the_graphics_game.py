@@ -92,11 +92,17 @@ class VectorSprite(pygame.sprite.Sprite):
         self.age = 0
         
     
-    
+    def faceto(self, angle):
+        oldcenter = self.rect.center
+        self.image = pygame.transform.rotate(self.image0, angle + 0)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldcenter
+        
     def update(self, seconds):
         self.age += seconds
         self.pos += self.move * seconds
         self.rect.center = (self.pos.x, self.pos.y)
+        self.faceto(self.move.get_angle())
         if self.lifetime is not None:
             self.lifetime -= seconds
             if self.lifetime < 0:
@@ -118,7 +124,8 @@ class VectorSprite(pygame.sprite.Sprite):
                 maxy = point.y
         self.image = pygame.Surface((maxx, maxy))
         pygame.draw.circle(self.image, self.color, (2,2), 2)
-        self.image.convert_alpha()  
+        self.image.convert_alpha() 
+        self.image0 = self.image.copy() 
   
 class Ufo(VectorSprite):
   
@@ -609,16 +616,32 @@ class PygView(object):
                         Rocket(start, end, ex=8)
                     if event.key == pygame.K_9:
                         Rocket(start, end, ex=9)
+                    if event.key == pygame.K_0:
+                        self.ship1.move = v.Vec2d(0, 0)
                                         
             # --------- pressed key handler --------------            
             pressed = pygame.key.get_pressed()            
-
+            if pressed[pygame.K_w]:
+                self.ship1.move += v.Vec2d(0, -10)
+            elif pressed[pygame.K_a]:
+                self.ship1.move += v.Vec2d(-10, 0)
+            elif pressed[pygame.K_s]:
+                self.ship1.move += v.Vec2d(0, +10)
+            elif pressed[pygame.K_d]:
+                self.ship1.move += v.Vec2d(+10, 0)
             
             # ---------- update screen ----------- 
             self.screen.blit(self.background, (0, 0))
             # ------ sprite ------
             self.allgroup.update(seconds)
             self.allgroup.draw(self.screen)
+            #--------- simon special stuff ----
+            # green movement indicator for ship1
+            pygame.draw.line(self.screen, (0,200,0), (self.ship1.pos.x, self.ship1.pos.y),
+                         (self.ship1.pos.x + self.ship1.move.x, self.ship1.pos.y + self.ship1.move.y), 3)
+            # green movement indicator for ufo1
+            pygame.draw.line(self.screen, (0, 200, 0), (self.ufo1.pos.x, self.ufo1.pos.y),
+                         (self.ufo1.pos.x + self.ufo1.move.x, self.ufo1.pos.y + self.ufo1.move.y), 3)
             # ------ flip screen ------
             pygame.display.flip()
             
